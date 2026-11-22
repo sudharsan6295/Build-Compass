@@ -2,7 +2,7 @@
 
 A vendor-neutral framework for deciding whether an organisation should **build its own software with AI** or keep buying, subscribing to or outsourcing it — and, if the answer is build, for designing, vibe-coding, testing, deploying and supporting it safely.
 
-**Live page:** https://sudharsan6295.github.io/ai-build-framework/
+**Live page:** https://sudharsan6295.github.io/Build-Compass/
 
 ## What's inside
 
