@@ -1,5 +1,7 @@
 # Build Compass
 
+**Version 0.9 (draft, November 2026).** Not yet tested in a live organisation; feedback welcome via GitHub issues.
+
 A vendor-neutral framework for deciding whether an organisation should **build its own software with AI** or keep buying, subscribing to or outsourcing it — and, if the answer is build, for designing, vibe-coding, testing, deploying and supporting it safely.
 
 **Live page:** https://sudharsan6295.github.io/Build-Compass/
@@ -14,6 +16,7 @@ A vendor-neutral framework for deciding whether an organisation should **build i
 - **14 build principles** to check before development starts
 - **Decision toolkit**: an AI-build suitability filter, a TCO calculator with best/worst-case ranges, and a scorecard with knockout criteria, all running in the browser
 - **Measure the framework** (DORA, AI-assisted engineering, value and governance metrics) and a **standards mapping** (ISO/IEC 42001, NIST AI RMF, NIST SSDF, OWASP, SLSA, EU AI Act, DPDP and more)
+- **Builds on**: credits the prior work it draws from (Gartner Pace Layers, Wardley Mapping, DORA, the Power Platform CoE, Stage-Gate, spec-driven development, NIST/ISO/OWASP)
 - **Roles & RACI** and a **glossary**
 
 ## Make your own version
@@ -29,6 +32,12 @@ python -m http.server 8000
 ## Publishing on GitHub Pages
 
 Repository → Settings → Pages → Build and deployment → Source: **Deploy from a branch**, Branch: **main**, folder **/ (root)**.
+
+---
+
+## Licence
+
+Content: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Code: MIT. See [LICENSE](LICENSE). Built with AI assistance.
 
 ---
 

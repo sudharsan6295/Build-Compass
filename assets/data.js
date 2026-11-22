@@ -118,7 +118,7 @@ window.FRAMEWORK = {
     },
     {
       id: "p2", num: "02", stage: "decide",
-      name: "Build, Buy or Blend", label: "Build-vs-buy decision",
+      name: "Choose the Route", label: "Build-vs-buy decision",
       tagline: "Filter out the impossible, then compare what's left on cost ranges, strategic value and risk.",
       summary: "AI has made building much cheaper, but not free: the cost moves from writing code to owning it. This phase removes options that fail a hard requirement, compares the rest, and funds the winner in stages rather than all at once.",
       options: [
@@ -662,6 +662,18 @@ window.FRAMEWORK = {
     ["GDPR / India DPDP Act 2023", "Personal data protection", "Data rail, Phase 01, Phase 03 (privacy impact assessment)"],
     ["DORA metrics", "Software delivery performance measures", "Measure section, Phase 09"],
     ["ITIL 4", "IT service management practices", "Phase 08 (support, incidents, change)"]
+  ],
+
+  // Prior work this framework draws on. Build Compass is an independent synthesis, not endorsed by any of these.
+  buildsOn: [
+    ["Gartner Pace-Layered Application Strategy and “buy, build or blend”", "Build what differentiates, buy systems of record, and expect most answers to be a blend.", "Phase 02, scorecard, the Blend option"],
+    ["Wardley Mapping (Simon Wardley)", "Components evolve from custom-built to commodity; build where you are still differentiating.", "Strategic differentiation criterion"],
+    ["DORA metrics and the 2025 DORA AI Capabilities Model", "Delivery measures; a clear AI stance, small batches and quality internal platforms amplify AI-assisted development.", "Layer 0, golden path, slices, Measure section"],
+    ["Microsoft Power Platform Center of Excellence", "Governing apps built by business users through inventory, environments and graduated controls.", "Tier 0, AI app register, promotion triggers"],
+    ["Platform engineering and golden paths", "Paved, pre-approved starting points so teams are safe by default.", "Platform & golden path rail"],
+    ["Stage-Gate (Robert G. Cooper)", "Go / kill decisions between stages, with funding tied to evidence.", "Decision gates, staged funding"],
+    ["Spec-driven development (e.g. GitHub Spec Kit)", "Specifications as the primary input to AI coding agents.", "Phase 04, “spec before prompt”"],
+    ["NIST AI RMF, ISO/IEC 42001, NIST SSDF, OWASP", "Recognised AI-risk, management-system and secure-development guidance.", "See Standards mapping"]
   ],
 
   glossary: [

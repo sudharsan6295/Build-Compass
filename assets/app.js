@@ -506,6 +506,14 @@
     $("standards-root").innerHTML = html + "</tbody></table></div>";
   }
 
+  function renderCredits() {
+    var html = '<div class="table-wrap"><table class="standards"><thead><tr><th scope="col">Source</th><th scope="col">Idea borrowed</th><th scope="col">Where it shows up</th></tr></thead><tbody>';
+    F.buildsOn.forEach(function (b) {
+      html += '<tr><th scope="row" class="wrap">' + esc(b[0]) + "</th><td>" + esc(b[1]) + "</td><td>" + esc(b[2]) + "</td></tr>";
+    });
+    $("credits-root").innerHTML = html + "</tbody></table></div>";
+  }
+
   /* ---------- glossary ---------- */
   function renderGlossary() {
     $("glossary-root").innerHTML = F.glossary.map(function (g) {
@@ -532,6 +540,7 @@
     ["toolkit", "Decision toolkit"],
     ["metrics", "Measure the framework"],
     ["standards", "Standards mapping"],
+    ["credits", "Builds on"],
     ["raci", "Roles & RACI"],
     ["glossary", "Glossary"],
     ["adapt", "Make it your own"]
@@ -698,6 +707,7 @@
   renderToolkit();
   renderMetrics();
   renderStandards();
+  renderCredits();
   renderRaci();
   renderGlossary();
   renderAdapt();
