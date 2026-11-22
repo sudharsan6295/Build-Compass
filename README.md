@@ -14,7 +14,7 @@ A vendor-neutral framework for deciding whether an organisation should **build i
 - **7 always-on rails**: security, governance & compliance, platform & golden path, AI harness & tooling, data, cost & FinOps, people & change
 - **Build methodology** ("governed vibe engineering"): explore vs engineer mode, the Guided Build Loop, rigour by risk tier, promotion triggers and a fast lane for Tier 0–1
 - **14 build principles** to check before development starts
-- **Decision toolkit**: an AI-build suitability filter, a TCO calculator with best/worst-case ranges, and a scorecard with knockout criteria, all running in the browser
+- **Decision toolkit**: an AI-build suitability filter, a TCO calculator with NPV (discounted) comparison and best/worst-case ranges, and a scorecard with knockout criteria, all running in the browser
 - **Measure the framework** (DORA, AI-assisted engineering, value and governance metrics) and a **standards mapping** (ISO/IEC 42001, NIST AI RMF, NIST SSDF, OWASP, SLSA, EU AI Act, DPDP and more)
 - **Builds on**: credits the prior work it draws from (Gartner Pace Layers, Wardley Mapping, DORA, the Power Platform CoE, Stage-Gate, spec-driven development, NIST/ISO/OWASP)
 - **Roles & RACI** and a **glossary**

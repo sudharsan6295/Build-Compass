@@ -296,9 +296,12 @@
     html += '<fieldset class="fs fs-common"><legend>Horizon</legend>' +
             '<label class="field" for="tco-years"><span>Years to compare</span><input id="tco-years" type="range" min="1" max="7" value="5" data-tco="years"><output id="tco-years-out">5</output></label>' +
             '<label class="field" for="tco-unc"><span>Uncertainty on build costs (±%)</span><input id="tco-unc" type="number" min="0" max="90" step="5" value="25" data-tco="unc"></label>' +
+            '<label class="field" for="tco-rate"><span>Discount rate (% a year) †</span><input id="tco-rate" type="number" min="0" max="40" step="0.5" value="10" data-tco="disc"></label>' +
+            '<label class="field" for="tco-basis"><span>Compare in</span><select id="tco-basis" data-tco="basis"><option value="npv" selected>Today\'s money (NPV)</option><option value="nominal">Nominal (undiscounted)</option></select></label>' +
             '<label class="field" for="tco-cur"><span>Currency symbol</span><select id="tco-cur" data-tco="cur"><option>₹</option><option selected>$</option><option>€</option><option>£</option></select></label>' +
             '<p class="fineprint">Build year 1 includes the build plus overrun; maintenance starts in year 2. Buy year 1 includes implementation. Exit and decommissioning land in the final year. Buy-side uncertainty is taken as half the build figure, since vendor prices are more predictable.</p>' +
-            '<p class="fineprint">* A common rule of thumb is 15–25% a year. Treat it as an assumption; AI-generated code tends toward the high end unless refactored.</p></fieldset>';
+            '<p class="fineprint">* A common rule of thumb is 15–25% a year. Treat it as an assumption; AI-generated code tends toward the high end unless refactored.</p>' +
+            '<p class="fineprint">† Use your finance team\'s rate (often the cost of capital). Costs are treated as paid at the start of each year: year 1 is today\'s money, year 2 is divided by (1 + rate), year 3 by (1 + rate)², and so on. Discounting gives less weight to later costs. Building spends most of its money in year 1, so in today’s money it usually looks relatively more expensive than its nominal total suggests.</p></fieldset>';
     html += "</div>";
     html += '<div class="tco-result" aria-live="polite"><p class="verdict" id="tco-verdict"></p><div class="chart-wrap" id="tco-chart"></div><div class="table-wrap" id="tco-table"></div></div></div>';
 
@@ -342,6 +345,8 @@
       if (key === "cur") v.cur = el.value;
       else if (key === "years") v.years = parseInt(el.value, 10) || 5;
       else if (key === "unc") { var u = parseFloat(el.value); v.unc = isFinite(u) ? Math.min(Math.max(u, 0), 90) / 100 : 0.25; }
+      else if (key === "disc") { var r = parseFloat(el.value); v.disc = isFinite(r) ? Math.min(Math.max(r, 0), 40) / 100 : 0.1; }
+      else if (key === "basis") v.basis = el.value === "nominal" ? "nominal" : "npv";
       else {
         var parts = key.split(".");
         var num = parseFloat(el.value);
@@ -353,30 +358,37 @@
 
   function computeTco() {
     var v = readTco(), b = v.buy, d = v.build, u = v.unc == null ? 0.25 : v.unc;
+    var rate = v.disc == null ? 0.1 : v.disc, npv = v.basis !== "nominal";
     var buildCost = d.months * d.rate * (1 + d.overrun / 100);
-    var rows = [], cb = 0, cd = 0, breakEven = null;
+    var rows = [], nb = 0, nd = 0, pb = 0, pd = 0, breakEven = null;
     for (var y = 1; y <= v.years; y++) {
       var last = y === v.years;
       var buyYear = b.users * b.seat * Math.pow(1 + b.rise / 100, y - 1) + b.changes + b.admin + (y === 1 ? b.impl : 0) + (last ? b.exit : 0);
       var buildYear = d.internal + d.security + d.aitools + d.hosting + d.support +
                       (y === 1 ? buildCost : buildCost * d.maint / 100) + (last ? d.decom : 0);
-      cb += buyYear; cd += buildYear;
-      if (breakEven === null && cd <= cb) breakEven = y;
-      rows.push({ y: y, buyYear: buyYear, buildYear: buildYear, cb: cb, cd: cd,
-                  cbLo: cb * (1 - u / 2), cbHi: cb * (1 + u / 2), cdLo: cd * (1 - u), cdHi: cd * (1 + u) });
+      var df = 1 / Math.pow(1 + rate, y - 1); // start-of-year convention: year 1 is today's money
+      nb += buyYear; nd += buildYear; pb += buyYear * df; pd += buildYear * df;
+      var cbY = npv ? pb : nb, cdY = npv ? pd : nd;
+      if (breakEven === null && cdY <= cbY) breakEven = y;
+      rows.push({ y: y, buyYear: buyYear, buildYear: buildYear, nb: nb, nd: nd, pb: pb, pd: pd, cb: cbY, cd: cdY,
+                  cbLo: cbY * (1 - u / 2), cbHi: cbY * (1 + u / 2), cdLo: cdY * (1 - u), cdHi: cdY * (1 + u) });
     }
     $("tco-years-out").textContent = v.years;
 
-    var end = rows[rows.length - 1];
+    var end = rows[rows.length - 1], cb = end.cb, cd = end.cd;
     var diff = cb - cd, verdict, c = v.cur;
+    var basisText = npv ? " in today's money (NPV at " + +(rate * 100).toFixed(2) + "%)" : " in nominal terms";
     if (Math.abs(diff) < 0.05 * Math.max(cb, cd)) {
-      verdict = "Expected cost over " + v.years + " years is about the same for both routes (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
+      verdict = "Expected cost over " + v.years + " years" + basisText + " is about the same for both routes (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
     } else if (diff > 0) {
-      verdict = "Expected: building is cheaper by <b>" + fmt(diff, c) + "</b> over " + v.years + " years (" + fmt(cd, c) + " vs " + fmt(cb, c) + ")" +
+      verdict = "Expected" + basisText + ": building is cheaper by <b>" + fmt(diff, c) + "</b> over " + v.years + " years (" + fmt(cd, c) + " vs " + fmt(cb, c) + ")" +
                 (breakEven ? ", dropping below buying in <b>year " + breakEven + "</b>." : ".");
     } else {
-      verdict = "Expected: buying is cheaper by <b>" + fmt(-diff, c) + "</b> over " + v.years + " years (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
+      verdict = "Expected" + basisText + ": buying is cheaper by <b>" + fmt(-diff, c) + "</b> over " + v.years + " years (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
     }
+    verdict += '<span class="verdict-range">' + (npv
+      ? "Undiscounted, the totals are buy " + fmt(end.nb, c) + " vs build " + fmt(end.nd, c) + "."
+      : "In today's money at " + +(rate * 100).toFixed(2) + "%, the totals are buy " + fmt(end.pb, c) + " vs build " + fmt(end.pd, c) + ".") + "</span>";
     var overlap = end.cdLo <= end.cbHi && end.cbLo <= end.cdHi;
     var signal = diff < 0 ? "Building would need a strategic reason beyond cost." : "Cost is a real argument for building.";
     if (u > 0) {
@@ -387,16 +399,16 @@
       verdict += '<span class="verdict-range">No uncertainty set, so no range is shown. Real estimates are rarely this precise.</span>';
     }
     $("tco-verdict").innerHTML = verdict;
-    $("tco-chart").innerHTML = tcoChart(rows, c);
+    $("tco-chart").innerHTML = tcoChart(rows, c, npv ? "cumulative cost in today's money" : "cumulative cost, undiscounted");
 
-    var t = '<table class="tco-table"><thead><tr><th scope="col">Year</th><th scope="col">Buy (year)</th><th scope="col">Build (year)</th><th scope="col">Buy (cumulative)</th><th scope="col">Build (cumulative)</th></tr></thead><tbody>';
+    var t = '<table class="tco-table"><thead><tr><th scope="col">Year</th><th scope="col">Buy (year)</th><th scope="col">Build (year)</th><th scope="col">Buy (cumulative)</th><th scope="col">Build (cumulative)</th><th scope="col">Buy (NPV, cumulative)</th><th scope="col">Build (NPV, cumulative)</th></tr></thead><tbody>';
     rows.forEach(function (r) {
-      t += '<tr><th scope="row">Y' + r.y + "</th><td>" + fmt(r.buyYear, c) + "</td><td>" + fmt(r.buildYear, c) + "</td><td>" + fmt(r.cb, c) + "</td><td>" + fmt(r.cd, c) + "</td></tr>";
+      t += '<tr><th scope="row">Y' + r.y + "</th><td>" + fmt(r.buyYear, c) + "</td><td>" + fmt(r.buildYear, c) + "</td><td>" + fmt(r.nb, c) + "</td><td>" + fmt(r.nd, c) + "</td><td>" + fmt(r.pb, c) + "</td><td>" + fmt(r.pd, c) + "</td></tr>";
     });
     $("tco-table").innerHTML = t + "</tbody></table>";
   }
 
-  function tcoChart(rows, cur) {
+  function tcoChart(rows, cur, basisLabel) {
     var W = 640, H = 260, L = 64, Rp = 20, T = 18, B = 34;
     var max = 0;
     rows.forEach(function (r) { max = Math.max(max, r.cbHi, r.cdHi); });
@@ -428,7 +440,7 @@
     s += band("cbLo", "cbHi", "b-buy") + band("cdLo", "cdHi", "b-build");
     s += line("cb", "s-buy") + line("cd", "s-build");
     s += "</svg>";
-    s += '<div class="legend"><span class="key k-buy"></span>Buy / subscribe <span class="key k-build"></span>Build with AI <span class="legend-note">cumulative cost · shaded = best to worst case</span></div>';
+    s += '<div class="legend"><span class="key k-buy"></span>Buy / subscribe <span class="key k-build"></span>Build with AI <span class="legend-note">' + esc(basisLabel || "cumulative cost") + ' · shaded = best to worst case</span></div>';
     return s;
   }
 

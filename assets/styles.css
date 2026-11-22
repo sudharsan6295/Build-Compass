@@ -475,7 +475,7 @@ tbody th { font-weight: 600; }
 .k-buy { background: var(--gate); }
 .k-build { background: var(--accent); margin-left: 8px; }
 .legend-note { margin-left: auto; font-family: var(--font-mono); font-size: 0.75rem; }
-.tco-table { min-width: 520px; }
+.tco-table { min-width: 720px; }
 .tco-table td { font-family: var(--font-mono); font-size: 0.85rem; text-align: right; }
 .tco-table thead th:not(:first-child) { text-align: right; }
 

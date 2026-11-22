@@ -141,7 +141,7 @@ window.FRAMEWORK = {
       ],
       activities: [
         ["Suitability filter & knockouts", "Check the AI-build suitability lists and the knockout criteria in the scorecard. A knocked-out option is not scored."],
-        ["TCO model", "Cumulative 3–5 year cost for each option, costed at the risk tier, with best and worst cases. Use the TCO calculator."],
+        ["TCO model", "Cumulative 3–5 year cost for each option, costed at the risk tier, with best and worst cases, and discounted to today's money (NPV) at your finance team's rate. Use the TCO calculator."],
         ["Weighted scorecard", "Agree criteria and weights first, then score. Use the scorecard in the Decision toolkit."],
         ["Risk review", "Vendor lock-in, key-person risk, security and compliance exposure, delivery risk."],
         ["Staged business case", "Tranche 1 funds design, an MVP and a pilot. Scale funding is released only at Gate G5, once the pilot proves value."]
@@ -155,7 +155,7 @@ window.FRAMEWORK = {
       gate: { id: "G2", name: "Investment decision · tranche 1", branch: "Buy, Subscribe or Outsource → hand over to procurement. Build, Blend or Replace gradually → continue to Phase 03 with tranche-1 funding." },
       checks: [
         "Suitability filter and knockout criteria applied",
-        "TCO compared over at least three years, at the risk tier, with best and worst cases",
+        "TCO compared over at least three years, at the risk tier, in today's money (NPV), with best and worst cases",
         "Weights agreed before options were scored",
         "Business case approved with success metrics, a kill criterion and a tranche-1 budget",
         "Decision and its reasons recorded"
@@ -484,7 +484,7 @@ window.FRAMEWORK = {
       id: "cost", name: "Cost & FinOps", color: "var(--rail-cost)",
       summary: "The TCO from Phase 02 is a living number, tracked until the product retires.",
       controls: [
-        "3–5 year TCO for every option, with best and worst cases",
+        "3–5 year TCO for every option, discounted (NPV), with best and worst cases",
         "Staged funding: tranche 1 for MVP and pilot, scale funding at G5",
         "AI seat and token spend budgeted and monitored",
         "Savings counted only when a vendor contract actually ends",
@@ -701,6 +701,7 @@ window.FRAMEWORK = {
     ["Guardrails", "Controls that keep AI behaviour within safe limits, in the build process or in an AI feature itself."],
     ["Knockout criteria", "Hard requirements checked before scoring. An option that fails one is removed, however well it scores elsewhere."],
     ["LLMOps", "Running AI features in production: prompt and model versioning, evals, monitoring, drift and deprecation."],
+    ["NPV (net present value)", "Future costs converted into today's money using a discount rate, so options that spend at different times can be compared fairly."],
     ["MCP (Model Context Protocol)", "An open standard for connecting AI assistants to tools and data sources. Each connector is an access decision."],
     ["Promotion trigger", "A condition, such as touching customer data, that moves an app from Tier 0 into the formal process."],
     ["Prompt injection", "An attack where malicious text in data tricks an AI into ignoring its instructions."],
