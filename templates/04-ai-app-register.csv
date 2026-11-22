@@ -1,0 +1,2 @@
+app_id,app_name,owner,engineer_of_record,business_unit,risk_tier,data_classes,users_approx,writes_to_system_of_record,external_facing,built_with,platform,status,promotion_trigger_fired,last_review,next_review,notes
+APP-001,Example: design-change approval router,Jane Doe (Engineering Ops),A. Kumar,Engineering,2,Internal;Confidential,120,Yes (PLM),No,AI-assisted (approved tools),Golden path web app,Pilot,Yes - writes to system of record,2026-11-01,2027-05-01,Illustrative row - delete before use

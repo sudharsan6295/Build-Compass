@@ -36,7 +36,7 @@
     html += '<div class="map">';
     F.stages.forEach(function (stage, si) {
       html += '<div class="map-stage stage-' + stage.id + '">';
-      html += '<div class="map-stage-head"><span class="map-stage-num">Stage ' + (si + 1) + '</span>' +
+      html += '<div class="map-stage-head"><span class="map-stage-num">' + (stage.point ? '<b class="compass-pt">' + stage.point + '</b> ' : '') + 'Stage ' + (si + 1) + '</span>' +
               '<span class="map-stage-name">' + esc(stage.name) + '</span>' +
               '<span class="map-stage-blurb">' + esc(stage.blurb) + '</span></div>';
       html += '<ol class="map-nodes">';
@@ -50,7 +50,7 @@
           html += '<div class="map-gate"><span class="diamond" aria-hidden="true"></span>' +
                   '<span><b>' + p.gate.id + '</b> ' + esc(p.gate.name) + '</span></div>';
           if (p.gate.branch) {
-            html += '<div class="map-branch"><span aria-hidden="true">↳</span> Buy / Subscribe / Outsource exits to procurement</div>';
+            html += '<div class="map-branch"><span aria-hidden="true">↳</span> Buy / Subscribe / Outsource → <a href="#buy-track">buy track</a></div>';
           }
         }
         html += '</li>';
@@ -526,6 +526,64 @@
     $("credits-root").innerHTML = html + "</tbody></table></div>";
   }
 
+  /* ---------- buy track, worked example, outcomes, templates ---------- */
+  function renderBuyTrack() {
+    var t = F.buyTrack;
+    var html = '<p class="section-intro">' + esc(t.intro) + '</p><ol class="lane buy-steps">';
+    t.steps.forEach(function (s) { html += "<li><b>" + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></li>"; });
+    html += '</ol><div class="method-pair">';
+    html += '<div class="mini-panel block-gate"><h3 class="sub">Checklist before signing</h3><ul class="checks">';
+    t.checks.forEach(function (c, i) {
+      var cid = "buy-c" + i;
+      html += '<li><label><input type="checkbox" data-check="' + cid + '" data-phase="buy"' + (checks[cid] ? " checked" : "") + "><span>" + esc(c) + "</span></label></li>";
+    });
+    html += '</ul></div><div class="mini-panel"><h3 class="sub">If you blend</h3>' + list(t.blend, "trigger-list") + "</div></div>";
+    $("buy-root").innerHTML = html;
+    $("buy-root").addEventListener("change", function (e) {
+      var c = e.target;
+      if (!c.matches || !c.matches("[data-check]")) return;
+      var id = c.getAttribute("data-check");
+      if (c.checked) checks[id] = true; else delete checks[id];
+      storeSet(STORE_KEY, checks);
+    });
+  }
+
+  function renderExample() {
+    var x = F.example;
+    var html = '<p class="section-intro"><b>' + esc(x.title) + '.</b> ' + esc(x.note) + '</p><ol class="example-steps">';
+    x.steps.forEach(function (s) { html += "<li><b>" + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></li>"; });
+    html += '</ol><button type="button" class="btn" id="load-example">Load this example into the toolkit</button>';
+    $("example-root").innerHTML = html;
+    $("load-example").addEventListener("click", loadExample);
+  }
+
+  function setVal(id, v) { var el = $(id); if (el) el.value = v; }
+  function loadExample() {
+    var t = F.example.tco;
+    Object.keys(t.buy).forEach(function (k) { setVal("tco-buy-" + k, t.buy[k]); });
+    Object.keys(t.build).forEach(function (k) { setVal("tco-build-" + k, t.build[k]); });
+    setVal("tco-years", t.years); setVal("tco-rate", t.disc); setVal("tco-unc", t.unc); setVal("tco-basis", "npv");
+    document.querySelectorAll("[data-knock]").forEach(function (k) { k.checked = false; });
+    F.example.scores.forEach(function (v, i) { var el = document.querySelector('[data-score="' + i + '"]'); if (el) el.value = v; });
+    document.querySelectorAll("[data-weight]").forEach(function (w) { w.value = 2; });
+    computeTco();
+    computeScore();
+    go("tco", true);
+  }
+
+  function renderOutcomes() {
+    $("outcomes-root").innerHTML = F.outcomes.map(function (o) {
+      return '<div class="outcome"><b>' + esc(o[0]) + "</b><span>" + esc(o[1]) + "</span></div>";
+    }).join("");
+  }
+
+  function renderTemplates() {
+    var base = "https://github.com/sudharsan6295/Build-Compass/blob/main/";
+    $("templates-root").innerHTML = F.templates.map(function (t) {
+      return '<li><a href="' + base + t[2] + '" rel="noopener">' + esc(t[0]) + '</a><span class="chip chip-check">' + esc(t[1]) + "</span></li>";
+    }).join("");
+  }
+
   /* ---------- glossary ---------- */
   function renderGlossary() {
     $("glossary-root").innerHTML = F.glossary.map(function (g) {
@@ -546,6 +604,8 @@
   var NAV = [
     ["map", "Framework map"],
     ["phases", "Phases", ALL.map(function (p) { return [p.id, p.num + " " + p.name]; })],
+    ["buy-track", "If you buy"],
+    ["example", "Worked example"],
     ["method", "Build methodology"],
     ["principles", "Build principles"],
     ["rails", "Always-on rails"],
@@ -553,6 +613,7 @@
     ["metrics", "Measure the framework"],
     ["standards", "Standards mapping"],
     ["credits", "Builds on"],
+    ["templates", "Templates"],
     ["raci", "Roles & RACI"],
     ["glossary", "Glossary"],
     ["adapt", "Make it your own"]
@@ -720,6 +781,10 @@
   renderMetrics();
   renderStandards();
   renderCredits();
+  renderBuyTrack();
+  renderExample();
+  renderOutcomes();
+  renderTemplates();
   renderRaci();
   renderGlossary();
   renderAdapt();

@@ -1,6 +1,6 @@
 # Build Compass
 
-**Version 0.9 (draft, November 2026).** Not yet tested in a live organisation; feedback welcome via GitHub issues.
+**Version 0.10 (draft, November 2026).** See the [changelog](CHANGELOG.md). Not yet tested in a live organisation; feedback welcome via GitHub issues.
 
 A vendor-neutral framework for deciding whether an organisation should **build its own software with AI** or keep buying, subscribing to or outsourcing it — and, if the answer is build, for designing, vibe-coding, testing, deploying and supporting it safely.
 
@@ -17,6 +17,9 @@ A vendor-neutral framework for deciding whether an organisation should **build i
 - **Decision toolkit**: an AI-build suitability filter, a TCO calculator with NPV (discounted) comparison and best/worst-case ranges, and a scorecard with knockout criteria, all running in the browser
 - **Measure the framework** (DORA, AI-assisted engineering, value and governance metrics) and a **standards mapping** (ISO/IEC 42001, NIST AI RMF, NIST SSDF, OWASP, SLSA, EU AI Act, DPDP and more)
 - **Builds on**: credits the prior work it draws from (Gartner Pace Layers, Wardley Mapping, DORA, the Power Platform CoE, Stage-Gate, spec-driven development, NIST/ISO/OWASP)
+- **Buy track** and **blend governance** for when the answer is buy
+- An **illustrative worked example** you can load into the toolkit
+- **Templates** in [`templates/`](templates/): problem brief, staged business case, ADR, AI app register, vendor contract checklist
 - **Roles & RACI** and a **glossary**
 
 ## Make your own version

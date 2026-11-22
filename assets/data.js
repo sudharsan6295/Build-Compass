@@ -5,10 +5,10 @@
  */
 window.FRAMEWORK = {
   stages: [
-    { id: "decide",  name: "Decide",  blurb: "Should we own this?",           phases: ["p0", "p1", "p2"] },
-    { id: "prepare", name: "Prepare", blurb: "Apply the rules, write the spec", phases: ["p3", "p4"] },
-    { id: "deliver", name: "Deliver", blurb: "Build, prove, ship",             phases: ["p5", "p6", "p7"] },
-    { id: "run",     name: "Run",     blurb: "Own it for its whole life",      phases: ["p8", "p9"] }
+    { id: "decide", point: "N",  name: "Decide",  blurb: "Should we own this?",           phases: ["p0", "p1", "p2"] },
+    { id: "prepare", point: "E", name: "Prepare", blurb: "Apply the rules, write the spec", phases: ["p3", "p4"] },
+    { id: "deliver", point: "S", name: "Deliver", blurb: "Build, prove, ship",             phases: ["p5", "p6", "p7"] },
+    { id: "run", point: "W",     name: "Run",     blurb: "Own it for its whole life",      phases: ["p8", "p9"] }
   ],
 
   /* Layer 0 — done once per organisation, inherited by every product. */
@@ -40,7 +40,7 @@ window.FRAMEWORK = {
       "Shadow AI is the default when this layer is slow or heavy. Make the register and the golden path easier than going around them.",
       "Re-check AI tool terms whenever vendors change plans. “No training on your data” often applies only to enterprise tiers."
     ],
-    gate: { id: "L0", name: "Organisation ready" },
+    gate: { id: "L0", name: "Organisation ready?" },
     checks: [
       "AI usage policy and approved tool list published",
       "Tier definitions and promotion triggers agreed",
@@ -107,7 +107,7 @@ window.FRAMEWORK = {
         "Use AI to speed up research — summarising interviews, comparing vendor documents, drafting process maps — but never paste confidential or personal data into a tool that isn't approved for it.",
         "Check whether vendors are adding AI to their own products. The gap you want to close may close on its own."
       ],
-      gate: { id: "G1", name: "Problem validated" },
+      gate: { id: "G1", name: "Is the problem real?" },
       checks: [
         "Users interviewed or observed; workflow mapped",
         "Current spend and contract dates known",
@@ -118,7 +118,7 @@ window.FRAMEWORK = {
     },
     {
       id: "p2", num: "02", stage: "decide",
-      name: "Choose the Route", label: "Build-vs-buy decision",
+      name: "Weigh & Choose", label: "Build-vs-buy decision",
       tagline: "Filter out the impossible, then compare what's left on cost ranges, strategic value and risk.",
       summary: "AI has made building much cheaper, but not free: the cost moves from writing code to owning it. This phase removes options that fail a hard requirement, compares the rest, and funds the winner in stages rather than all at once.",
       options: [
@@ -152,7 +152,7 @@ window.FRAMEWORK = {
         "Count AI tooling: assistant seats, agent and token usage, and model price changes.",
         "“We can build it in a weekend” is a prototype estimate. Add authentication, permissions, audit, integration, testing and support before comparing."
       ],
-      gate: { id: "G2", name: "Investment decision · tranche 1", branch: "Buy, Subscribe or Outsource → hand over to procurement. Build, Blend or Replace gradually → continue to Phase 03 with tranche-1 funding." },
+      gate: { id: "G2", name: "Fund an MVP? (tranche 1)", branch: "Buy, Subscribe or Outsource → follow the buy track. Build, Blend or Replace gradually → continue to Phase 03 with tranche-1 funding." },
       checks: [
         "Suitability filter and knockout criteria applied",
         "TCO compared over at least three years, at the risk tier, in today's money (NPV), with best and worst cases",
@@ -222,7 +222,7 @@ window.FRAMEWORK = {
         "Prototype code is for learning, not shipping. Label prototype repos clearly so nothing drifts into production.",
         "Keep architecture decisions human. Let the AI propose options; a named person chooses and records why."
       ],
-      gate: { id: "G3", name: "Ready to build" },
+      gate: { id: "G3", name: "Ready to build?" },
       checks: [
         "Spec has testable acceptance criteria for the first release",
         "Architecture reviewed by the enterprise architect (review board for Tier 2+)",
@@ -233,7 +233,7 @@ window.FRAMEWORK = {
     },
     {
       id: "p5", num: "05", stage: "deliver",
-      name: "Build with AI", label: "Development",
+      name: "Build & Review", label: "Development with AI",
       tagline: "Build in small, verified slices, with AI as a fast pair and people as the accountable engineers.",
       summary: "Not waterfall, not plain Scrum: a tight loop of frame, plan, generate, review and verify, repeated for each slice. Phases 04 to 07 repeat for every release. See Build methodology for the full loop.",
       questions: [
@@ -292,7 +292,7 @@ window.FRAMEWORK = {
         "Have a person, or a separate AI session given only the spec, write the test cases, not the session that wrote the code.",
         "Mutation testing or spot-reviews of tests expose weak AI-written tests that always pass."
       ],
-      gate: { id: "G4", name: "Ready to release" },
+      gate: { id: "G4", name: "Ready to release?" },
       checks: [
         "All must-have acceptance criteria pass",
         "No open critical or high security findings",
@@ -326,7 +326,7 @@ window.FRAMEWORK = {
         "AI can draft infrastructure-as-code and pipelines; people approve every change to production config, access rights and networking.",
         "Deployments run from the pipeline, never from someone's AI session. Agent tokens stay out of production."
       ],
-      gate: { id: "G5", name: "Pilot proven · scale funding" },
+      gate: { id: "G5", name: "Pilot proven? Fund scale-up" },
       checks: [
         "Deployed through the pipeline, with no manual production changes",
         "Monitoring, alerts, backups and DR restore verified against RPO/RTO",
@@ -393,7 +393,7 @@ window.FRAMEWORK = {
       ai: [
         "Re-evaluate the AI tools themselves. Models and assistants change every few months; refresh approved lists, rules files and harness settings."
       ],
-      gate: { id: "G6", name: "Value review" },
+      gate: { id: "G6", name: "Still worth it?" },
       checks: [
         "Success metrics measured and reported to the sponsor",
         "Actual TCO and realised savings compared with the business case",
@@ -662,6 +662,68 @@ window.FRAMEWORK = {
     ["GDPR / India DPDP Act 2023", "Personal data protection", "Data rail, Phase 01, Phase 03 (privacy impact assessment)"],
     ["DORA metrics", "Software delivery performance measures", "Measure section, Phase 09"],
     ["ITIL 4", "IT service management practices", "Phase 08 (support, incidents, change)"]
+  ],
+
+  /* What to do when Gate G2 chooses to buy, subscribe or outsource — and how to govern a blend. */
+  buyTrack: {
+    intro: "Buying is a decision to own a relationship instead of a codebase. When Gate G2 chooses Buy, Subscribe or Outsource, these steps replace Phases 03–07. Layer 0, the rails and Phases 08–09 still apply.",
+    steps: [
+      ["Shortlist & fit", "Score three to five vendors against the must-haves and knockouts. Demo against your real scenarios, not the vendor's script."],
+      ["Proof of concept with real data", "A time-boxed trial with masked real data and real users. Test integration and admin effort, not just features."],
+      ["Security & AI due diligence", "Certifications, penetration-test summaries, data residency, and how the vendor uses your data in its own AI features: training, retention, opt-out."],
+      ["Contract protections", "Data export in an open format, exit assistance, caps on price rises, SLAs with service credits, notice periods, and written commitments for any must-have roadmap gap."],
+      ["Integrate on the golden path", "Connect through approved integration patterns and SSO. The vendor is a component of your architecture, not an exception to it."],
+      ["Manage the vendor", "A named owner, quarterly service reviews, licences against real usage, and a renewal decision six months before the date, re-running the scorecard each time."]
+    ],
+    checks: [
+      "Proof of concept passed with real users and masked real data",
+      "Security and AI data-use terms reviewed and accepted",
+      "Exit, data-export and price-cap clauses in the contract",
+      "Integration designed on the golden path, with SSO",
+      "Vendor owner named; renewal review in the calendar"
+    ],
+    blend: [
+      "Name an owner for every join between bought and built parts",
+      "Keep the vendor's core unmodified; build at the edges through supported APIs",
+      "Contract-test every integration so a vendor upgrade can't silently break what you built",
+      "Track vendor and in-house costs together as one product TCO"
+    ]
+  },
+
+  /* Illustrative worked example. Numbers are made up but realistic, and can be loaded into the toolkit. */
+  example: {
+    title: "Replacing an approval-workflow SaaS",
+    note: "A fictional mid-size engineering company with made-up but realistic numbers. Load it into the toolkit to check every figure yourself.",
+    steps: [
+      ["Intake & analysis (00–01)", "120 engineers route design-change approvals through a SaaS tool. Renewal is nine months away with an 8% price rise, and three change requests have waited over a year on the vendor's roadmap. The data is confidential; provisional risk tier 2."],
+      ["Knockouts", "None apply. No certified product is required, an owner and an engineer of record are named, and approval workflows sit on the good-fit list."],
+      ["Scorecard", "Leans Build: it changes often, the vendor fits poorly, it suits AI-assisted building and a team is ready to own it. Time to value counts slightly against."],
+      ["TCO, 5 years, NPV at 10%", "Building costs roughly $224k in today's money against about $373k for buying. Even with ±25% uncertainty on the build, the ranges don't overlap."],
+      ["Decision at Gate G2", "Build, funded in stages. Tranche 1 covers design, an MVP and an eight-week pilot in one department. The vendor contract runs on until Gate G5 proves the pilot."],
+      ["What could still stop it", "The pilot misses its cycle-time target, the security review finds the access model too weak, or real support effort runs above plan."]
+    ],
+    tco: {
+      buy: { users: 120, seat: 420, impl: 20000, rise: 8, changes: 15000, admin: 8000, exit: 20000 },
+      build: { months: 5, rate: 8000, overrun: 30, internal: 10000, security: 4000, aitools: 3000, hosting: 5000, maint: 20, support: 10000, decom: 8000 },
+      years: 5, disc: 10, unc: 25
+    },
+    scores: [1, 2, 1, 2, -1, 1, 0, 1, 1, 0, 0]
+  },
+
+  /* What success looks like. Targets are the organisation's to set. */
+  outcomes: [
+    ["Decide faster", "Days from intake to a recorded Gate G2 decision"],
+    ["Own only what pays back", "Actual 5-year cost in today's money against the business case"],
+    ["No shadow AI", "Share of AI-built apps listed in the register"],
+    ["Ship safely, again and again", "Change failure rate and time to restore"]
+  ],
+
+  templates: [
+    ["One-page problem brief", "Phase 00", "templates/01-problem-brief.md"],
+    ["Staged business case", "Phase 02", "templates/02-staged-business-case.md"],
+    ["Architecture decision record", "Phase 04", "templates/03-architecture-decision-record.md"],
+    ["AI app register", "Layer 0", "templates/04-ai-app-register.csv"],
+    ["Vendor contract checklist", "Buy track", "templates/05-vendor-contract-checklist.md"]
   ],
 
   // Prior work this framework draws on. Build Compass is an independent synthesis, not endorsed by any of these.

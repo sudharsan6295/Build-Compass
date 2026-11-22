@@ -655,3 +655,22 @@ tbody th { font-weight: 600; }
 .metric-group dd { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
 .standards { min-width: 720px; }
 .standards tbody th { white-space: nowrap; }
+
+/* v0.10: compass points, buy track, worked example, outcomes, templates */
+.compass-pt { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--stage); color: var(--bg); font-size: 0.68rem; margin-right: 4px; letter-spacing: 0; }
+.buy-steps { margin-bottom: 4px; }
+.buy-steps li::before { background: var(--gate-soft); color: var(--gate); }
+.example-steps { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; counter-reset: ex; }
+.example-steps li { counter-increment: ex; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; background: var(--bg); }
+.example-steps li b::before { content: counter(ex) ". "; color: var(--accent); font-family: var(--font-mono); }
+.example-steps span { color: var(--ink-soft); font-size: 0.94rem; }
+.outcomes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.outcome { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 8px; background: var(--go-soft); border: 1px solid color-mix(in srgb, var(--go) 35%, transparent); }
+.outcome b { font-family: var(--font-display); color: var(--go); }
+.outcome span { font-size: 0.92rem; color: var(--ink-soft); }
+.templates { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.templates li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.templates a { font-weight: 600; }
+.mini-panel .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.mini-panel.block-gate { border-color: color-mix(in srgb, var(--gate) 40%, transparent); }
+.mini-panel.block-gate .sub { color: var(--gate); }
