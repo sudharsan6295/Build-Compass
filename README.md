@@ -6,12 +6,14 @@ A vendor-neutral framework for deciding whether an organisation should **build i
 
 ## What's inside
 
-- **10 phases** in four stages (Decide → Prepare → Deliver → Run), each collapsible, with key questions, activities, outputs, AI / vibe-coding watch-outs and an exit checklist
-- **7 decision gates** (G0–G6), go / no-go points with explicit criteria
-- **6 always-on rails**: security, governance & compliance, AI harness & tooling, data, cost & FinOps, people & change
-- **Build methodology** ("governed vibe engineering"): explore vs engineer mode, the Guided Build Loop, rigour by risk tier
-- **12 build principles** to check before development starts
-- **Decision toolkit**: a TCO calculator and a weighted build-vs-buy scorecard, both running entirely in the browser
+- **Layer 0 · Organisation readiness**, set up once: AI policy, approved tools and contract terms, risk tiers (0–3) and promotion triggers, the AI app register, golden path platform, harness baseline, funding model
+- **10 product phases** in four stages (Decide → Prepare → Deliver → Run), each collapsible, with key questions, activities, outputs, AI / vibe-coding watch-outs and an exit checklist
+- **7 decision gates** (G0–G6) with staged funding: tranche 1 at G2, scale funding at G5 after a pilot
+- **7 always-on rails**: security, governance & compliance, platform & golden path, AI harness & tooling, data, cost & FinOps, people & change
+- **Build methodology** ("governed vibe engineering"): explore vs engineer mode, the Guided Build Loop, rigour by risk tier, promotion triggers and a fast lane for Tier 0–1
+- **14 build principles** to check before development starts
+- **Decision toolkit**: an AI-build suitability filter, a TCO calculator with best/worst-case ranges, and a scorecard with knockout criteria, all running in the browser
+- **Measure the framework** (DORA, AI-assisted engineering, value and governance metrics) and a **standards mapping** (ISO/IEC 42001, NIST AI RMF, NIST SSDF, OWASP, SLSA, EU AI Act, DPDP and more)
 - **Roles & RACI** and a **glossary**
 
 ## Make your own version

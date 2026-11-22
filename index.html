@@ -6,7 +6,7 @@
   <title>Build Compass — Build or buy, then build it right with AI</title>
   <meta name="description" content="A vendor-neutral framework for deciding whether an organisation should build its own software with AI or keep buying it, and for designing, vibe-coding, testing, deploying and supporting it safely.">
   <meta property="og:title" content="Build Compass">
-  <meta property="og:description" content="Build or buy, then build it right with AI: 10 phases, 7 decision gates, 6 always-on rails.">
+  <meta property="og:description" content="Build or buy, then build it right with AI: an organisation layer, 10 phases, 7 decision gates, 7 always-on rails.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#F4F7FB">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231D4ED8'/%3E%3Cpath d='M16 5l4 11-4 11-4-11z' fill='%23fff'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%231D4ED8'/%3E%3C/svg%3E">
@@ -53,9 +53,10 @@
         <h1 id="hero-title">Build Compass</h1>
         <p class="lead">When AI can write software, every organisation faces a new question: keep buying, subscribing and outsourcing the tools it depends on, or build exactly what it needs and stop waiting on another company's roadmap. Build Compass is an end-to-end framework for making that call honestly and, if the answer is <em>build</em>, for designing, vibe-coding, testing, shipping and supporting the product safely.</p>
         <div class="hero-stats">
-          <a class="stat" href="#phases"><span class="stat-num">10</span><span class="stat-label">phases, from first idea to retirement</span></a>
-          <a class="stat" href="#map"><span class="stat-num stat-gate">7</span><span class="stat-label">decision gates where you go, stop or change course</span></a>
-          <a class="stat" href="#rails"><span class="stat-num stat-rail">6</span><span class="stat-label">always-on rails: security, governance, AI harness, data, cost, people</span></a>
+          <a class="stat" href="#l0"><span class="stat-num stat-org">L0</span><span class="stat-label">an organisation layer, set up once: policy, tools, register, golden path</span></a>
+          <a class="stat" href="#phases"><span class="stat-num">10</span><span class="stat-label">product phases, from first idea to retirement</span></a>
+          <a class="stat" href="#map"><span class="stat-num stat-gate">7</span><span class="stat-label">decision gates, with funding released in stages</span></a>
+          <a class="stat" href="#rails"><span class="stat-num stat-rail">7</span><span class="stat-label">always-on rails: security, governance, platform, AI harness, data, cost, people</span></a>
         </div>
         <aside class="callout">
           <strong>Not every product should be an AI product.</strong>
@@ -66,7 +67,7 @@
       <details class="section" id="map" open>
         <summary class="section-head"><span class="section-kicker">Overview</span><h2>Framework map</h2><span class="chev" aria-hidden="true"></span></summary>
         <div class="section-body">
-          <p class="section-intro">Ten phases in four stages, read left to right and top to bottom. Amber diamonds are decision gates. The bars underneath run through every phase. Select a phase to open it.</p>
+          <p class="section-intro">Layer 0 is set up once for the whole organisation. Every product then runs ten phases in four stages, read left to right and top to bottom, and phases 04–07 repeat for each release. Amber diamonds are decision gates; the bars underneath run through every phase. Select anything to open it.</p>
           <div id="map-root"></div>
         </div>
       </details>
@@ -74,7 +75,7 @@
       <details class="section" id="phases" open>
         <summary class="section-head"><span class="section-kicker">The framework</span><h2>Phases</h2><span class="chev" aria-hidden="true"></span></summary>
         <div class="section-body">
-          <p class="section-intro">Each phase opens to show the questions to ask, the work to do, what it produces, the AI and vibe-coding watch-outs, and the checklist to clear before moving on. Ticks are saved in your browser only.</p>
+          <p class="section-intro">Layer 0 comes first and is done once per organisation; the ten product phases follow. Each opens to show the questions to ask, the work to do, what it produces, the AI and vibe-coding watch-outs, and the checklist to clear before moving on. Ticks are saved in your browser only.</p>
           <div class="toolbar">
             <button type="button" class="btn" data-action="expand">Expand all</button>
             <button type="button" class="btn" data-action="collapse">Collapse all</button>
@@ -91,7 +92,7 @@
       </details>
 
       <details class="section" id="principles" open>
-        <summary class="section-head"><span class="section-kicker">Before the first prompt</span><h2>Twelve build principles</h2><span class="chev" aria-hidden="true"></span></summary>
+        <summary class="section-head"><span class="section-kicker">Before the first prompt</span><h2>Build principles</h2><span class="chev" aria-hidden="true"></span></summary>
         <div class="section-body">
           <p class="section-intro">Check these with the team before development starts, and again whenever something goes wrong. If a principle is being broken, the fix is usually in the process, not the prompt.</p>
           <ol class="principles" id="principles-root"></ol>
@@ -101,7 +102,7 @@
       <details class="section" id="rails" open>
         <summary class="section-head"><span class="section-kicker">Cross-cutting</span><h2>Always-on rails</h2><span class="chev" aria-hidden="true"></span></summary>
         <div class="section-body">
-          <p class="section-intro">These aren't phases. They run underneath all ten, and every gate checks them. Open a rail to see its core controls.</p>
+          <p class="section-intro">These aren't phases. They run underneath Layer 0 and all ten phases, and every gate checks them. Open a rail to see its core controls.</p>
           <div class="rails" id="rails-root"></div>
         </div>
       </details>
@@ -111,6 +112,22 @@
         <div class="section-body">
           <p class="section-intro">Two working tools for the build-vs-buy decision. Everything is calculated in your browser; nothing is stored or sent anywhere. The default figures are illustrative only, so replace them with your own.</p>
           <div id="toolkit-root"></div>
+        </div>
+      </details>
+
+      <details class="section" id="metrics" open>
+        <summary class="section-head"><span class="section-kicker">Is it working?</span><h2>Measure the framework</h2><span class="chev" aria-hidden="true"></span></summary>
+        <div class="section-body">
+          <p class="section-intro">Sixteen measures in four groups, reviewed each quarter in Phase 09 and across the portfolio. Watch trends, not single readings, and never turn one number into a target on its own.</p>
+          <div class="metrics" id="metrics-root"></div>
+        </div>
+      </details>
+
+      <details class="section" id="standards" open>
+        <summary class="section-head"><span class="section-kicker">Audit-ready</span><h2>Standards mapping</h2><span class="chev" aria-hidden="true"></span></summary>
+        <div class="section-body">
+          <p class="section-intro">Where Build Compass lines up with standards your auditors, security team and regulators already know. The mapping is indicative: it shows where each standard's concerns are handled, not a claim of certification or compliance.</p>
+          <div id="standards-root"></div>
         </div>
       </details>
 

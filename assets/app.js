@@ -6,8 +6,9 @@
   if (!F) return;
 
   var STORE_KEY = "bc-checks-v1";
+  var ALL = [F.foundation].concat(F.phases);
   var phaseById = {};
-  F.phases.forEach(function (p) { phaseById[p.id] = p; });
+  ALL.forEach(function (p) { phaseById[p.id] = p; });
   var stageById = {};
   F.stages.forEach(function (s) { stageById[s.id] = s; });
 
@@ -28,7 +29,11 @@
 
   /* ---------- framework map ---------- */
   function renderMap() {
-    var html = '<div class="map">';
+    var L = F.foundation;
+    var html = '<a class="map-layer0" href="#' + L.id + '"><span class="map-layer0-tag">Layer 0 · set up once</span>' +
+               '<span class="map-layer0-name">' + esc(L.name) + '</span>' +
+               '<span class="map-layer0-items">AI policy · approved tools · tiers · app register · golden path · harness baseline · funding model</span></a>';
+    html += '<div class="map">';
     F.stages.forEach(function (stage, si) {
       html += '<div class="map-stage stage-' + stage.id + '">';
       html += '<div class="map-stage-head"><span class="map-stage-num">Stage ' + (si + 1) + '</span>' +
@@ -52,6 +57,7 @@
       });
       html += '</ol></div>';
     });
+    html += '<div class="map-loop"><span class="map-loop-icon" aria-hidden="true">↻</span><span><b>Release loop.</b> Phases 04–07 repeat for every release; Phase 09 feeds the next release back into 04. Tier 0–1 products take the <a href="#fast-lane">fast lane</a>.</span></div>';
     html += '</div>';
 
     html += '<div class="map-rails" aria-label="Always-on rails">';
@@ -80,10 +86,20 @@
            ' <span class="raci-pill raci-R">R</span> ' + esc(r.join(", ")) + "</p>";
   }
 
+  function suitabilityBlock() {
+    var s = F.suitability;
+    return '<div class="block block-wide"><h4>AI-build suitability filter</h4><div class="suit">' +
+      ["good", "caution", "avoid"].map(function (k) {
+        return '<div class="suit-col suit-' + k + '"><p class="suit-title">' + esc(s[k].title) + "</p>" + list(s[k].items, "suit-list") + "</div>";
+      }).join("") + "</div></div>";
+  }
+
   function renderPhases() {
     var html = "";
-    F.phases.forEach(function (p) {
-      var stage = stageById[p.stage];
+    ALL.forEach(function (p) {
+      var stage = p.stage === "org" ? { name: "Layer 0" } : stageById[p.stage];
+      if (p.stage === "org") html += '<p class="phase-group">Layer 0 · set up once per organisation</p>';
+      if (p.id === "p0") html += '<p class="phase-group">Product phases · run for every product</p>';
       html += '<details class="phase stage-' + p.stage + '" id="' + p.id + '">';
       html += '<summary class="phase-head">' +
                 '<span class="phase-num">' + p.num + '</span>' +
@@ -111,6 +127,7 @@
         });
         html += '</div><p class="tool-links"><a href="#tco">Open the TCO calculator</a> · <a href="#scorecard">Open the scorecard</a></p></div>';
       }
+      if (p.suitability) html += suitabilityBlock();
 
       html += '<div class="phase-grid">';
       html += '<div class="col">';
@@ -145,7 +162,7 @@
 
   function updateProgress() {
     var total = 0, done = 0;
-    F.phases.forEach(function (p) {
+    ALL.forEach(function (p) {
       var d = 0;
       p.checks.forEach(function (_, i) { if (checks[p.id + "-c" + i]) d++; });
       total += p.checks.length; done += d;
@@ -210,6 +227,12 @@
       html += "<tr>" + row.map(function (cell, i) { return i ? "<td>" + esc(cell) + "</td>" : '<th scope="row">' + esc(cell) + "</th>"; }).join("") + "</tr>";
     });
     html += "</tbody></table></div>";
+
+    html += '<div class="method-pair">';
+    html += '<div class="mini-panel"><h3 class="sub" id="triggers">Promotion triggers</h3><p class="fineprint">Any one of these moves a Tier 0 app into the formal process. Business teams can build freely until a trigger fires.</p>' + list(m.triggers, "trigger-list") + "</div>";
+    html += '<div class="mini-panel"><h3 class="sub" id="fast-lane">Fast lane · Tier 0–1</h3><ol class="lane">';
+    m.fastlane.forEach(function (s) { html += "<li><b>" + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></li>"; });
+    html += "</ol></div></div>";
     $("method-root").innerHTML = html;
   }
 
@@ -240,18 +263,23 @@
     buy: [
       ["users", "Users / seats", 50, 1],
       ["seat", "Price per seat per year", 600, 10],
-      ["impl", "One-time implementation", 20000, 1000],
-      ["rise", "Yearly price increase (%)", 8, 1],
-      ["changes", "Change requests & customisation per year", 10000, 1000],
-      ["admin", "Integration & admin per year", 5000, 1000]
+      ["impl", "One-time implementation", 15000, 1000],
+      ["rise", "Yearly price increase (%)", 7, 1],
+      ["changes", "Change requests & customisation per year", 8000, 1000],
+      ["admin", "Internal admin & integration staff per year", 6000, 1000],
+      ["exit", "Exit / migration cost (end of horizon)", 15000, 1000]
     ],
     build: [
       ["months", "Initial build effort (person-months)", 6, 1],
       ["rate", "Cost per person-month", 8000, 500],
+      ["overrun", "Overrun allowance on the build (%)", 30, 5],
+      ["internal", "Product owner & reviewer time per year", 10000, 1000],
+      ["security", "Security testing & audits per year", 5000, 500],
       ["aitools", "AI tooling per year", 3000, 500],
       ["hosting", "Hosting & infrastructure per year", 6000, 500],
-      ["maint", "Maintenance per year (% of build)", 20, 1],
-      ["support", "Support & operations per year", 12000, 1000]
+      ["maint", "Maintenance per year (% of build) *", 20, 1],
+      ["support", "Support & operations per year", 12000, 1000],
+      ["decom", "Decommissioning (end of horizon)", 10000, 1000]
     ]
   };
 
@@ -267,13 +295,21 @@
     html += '<fieldset class="fs fs-build"><legend>Build with AI</legend>' + TCO_FIELDS.build.map(function (f) { return field("build", f); }).join("") + "</fieldset>";
     html += '<fieldset class="fs fs-common"><legend>Horizon</legend>' +
             '<label class="field" for="tco-years"><span>Years to compare</span><input id="tco-years" type="range" min="1" max="7" value="5" data-tco="years"><output id="tco-years-out">5</output></label>' +
+            '<label class="field" for="tco-unc"><span>Uncertainty on build costs (±%)</span><input id="tco-unc" type="number" min="0" max="90" step="5" value="25" data-tco="unc"></label>' +
             '<label class="field" for="tco-cur"><span>Currency symbol</span><select id="tco-cur" data-tco="cur"><option>₹</option><option selected>$</option><option>€</option><option>£</option></select></label>' +
-            '<p class="fineprint">Build year 1 includes the build itself; maintenance starts in year 2. Buy year 1 includes implementation.</p></fieldset>';
+            '<p class="fineprint">Build year 1 includes the build plus overrun; maintenance starts in year 2. Buy year 1 includes implementation. Exit and decommissioning land in the final year. Buy-side uncertainty is taken as half the build figure, since vendor prices are more predictable.</p>' +
+            '<p class="fineprint">* A common rule of thumb is 15–25% a year. Treat it as an assumption; AI-generated code tends toward the high end unless refactored.</p></fieldset>';
     html += "</div>";
     html += '<div class="tco-result" aria-live="polite"><p class="verdict" id="tco-verdict"></p><div class="chart-wrap" id="tco-chart"></div><div class="table-wrap" id="tco-table"></div></div></div>';
 
-    html += '<div class="tool" id="scorecard"><h3 class="tool-title">Build-vs-buy scorecard <span>Weighted, 11 criteria</span></h3>';
-    html += '<p class="fineprint">Agree the weights first (how much each criterion matters to this decision), then slide each criterion toward the side the evidence supports.</p>';
+    html += '<div class="tool" id="scorecard"><h3 class="tool-title">Build-vs-buy scorecard <span>Knockouts, then 11 weighted criteria</span></h3>';
+    html += '<p class="fineprint">Step 1: tick any knockout that applies. A knocked-out route is not scored. Step 2: agree the weights (how much each criterion matters), then slide each criterion toward the side the evidence supports. Cost is left out on purpose: it has its own calculator above, and scoring it here would count it twice.</p>';
+    html += '<fieldset class="knockouts"><legend>Knockout criteria</legend>';
+    F.knockouts.forEach(function (k, i) {
+      html += '<label><input type="checkbox" data-knock="' + i + '" data-kills="' + k[1] + '"><span>' + esc(k[0]) +
+              ' <em class="kills kills-' + k[1] + '">rules out ' + (k[1] === "build" ? "building" : "buying") + "</em></span></label>";
+    });
+    html += "</fieldset>";
     html += '<div class="score-scale" aria-hidden="true"><span>← Favours buying</span><span>Favours building →</span></div>';
     html += '<div class="score-rows">';
     F.scorecard.forEach(function (c, i) {
@@ -305,6 +341,7 @@
       var key = el.getAttribute("data-tco");
       if (key === "cur") v.cur = el.value;
       else if (key === "years") v.years = parseInt(el.value, 10) || 5;
+      else if (key === "unc") { var u = parseFloat(el.value); v.unc = isFinite(u) ? Math.min(Math.max(u, 0), 90) / 100 : 0.25; }
       else {
         var parts = key.split(".");
         var num = parseFloat(el.value);
@@ -315,33 +352,46 @@
   }
 
   function computeTco() {
-    var v = readTco(), b = v.buy, d = v.build;
-    var buildCost = d.months * d.rate;
+    var v = readTco(), b = v.buy, d = v.build, u = v.unc == null ? 0.25 : v.unc;
+    var buildCost = d.months * d.rate * (1 + d.overrun / 100);
     var rows = [], cb = 0, cd = 0, breakEven = null;
     for (var y = 1; y <= v.years; y++) {
-      var buyYear = b.users * b.seat * Math.pow(1 + b.rise / 100, y - 1) + b.changes + b.admin + (y === 1 ? b.impl : 0);
-      var buildYear = d.aitools + d.hosting + d.support + (y === 1 ? buildCost : buildCost * d.maint / 100);
+      var last = y === v.years;
+      var buyYear = b.users * b.seat * Math.pow(1 + b.rise / 100, y - 1) + b.changes + b.admin + (y === 1 ? b.impl : 0) + (last ? b.exit : 0);
+      var buildYear = d.internal + d.security + d.aitools + d.hosting + d.support +
+                      (y === 1 ? buildCost : buildCost * d.maint / 100) + (last ? d.decom : 0);
       cb += buyYear; cd += buildYear;
-      if (breakEven === null && cd <= cb && y > 0) breakEven = y;
-      rows.push({ y: y, buyYear: buyYear, buildYear: buildYear, cb: cb, cd: cd });
+      if (breakEven === null && cd <= cb) breakEven = y;
+      rows.push({ y: y, buyYear: buyYear, buildYear: buildYear, cb: cb, cd: cd,
+                  cbLo: cb * (1 - u / 2), cbHi: cb * (1 + u / 2), cdLo: cd * (1 - u), cdHi: cd * (1 + u) });
     }
     $("tco-years-out").textContent = v.years;
 
-    var diff = cb - cd, verdict;
+    var end = rows[rows.length - 1];
+    var diff = cb - cd, verdict, c = v.cur;
     if (Math.abs(diff) < 0.05 * Math.max(cb, cd)) {
-      verdict = "Over " + v.years + " years the two routes cost about the same (" + fmt(cb, v.cur) + " vs " + fmt(cd, v.cur) + "). Let strategic fit and risk decide; see the scorecard.";
+      verdict = "Expected cost over " + v.years + " years is about the same for both routes (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
     } else if (diff > 0) {
-      verdict = "Building is cheaper by <b>" + fmt(diff, v.cur) + "</b> over " + v.years + " years (" + fmt(cd, v.cur) + " vs " + fmt(cb, v.cur) + ")" +
-                (breakEven ? ", with cumulative cost dropping below buying in <b>year " + breakEven + "</b>." : ".");
+      verdict = "Expected: building is cheaper by <b>" + fmt(diff, c) + "</b> over " + v.years + " years (" + fmt(cd, c) + " vs " + fmt(cb, c) + ")" +
+                (breakEven ? ", dropping below buying in <b>year " + breakEven + "</b>." : ".");
     } else {
-      verdict = "Buying is cheaper by <b>" + fmt(-diff, v.cur) + "</b> over " + v.years + " years (" + fmt(cb, v.cur) + " vs " + fmt(cd, v.cur) + "). Building needs a strategic reason beyond cost.";
+      verdict = "Expected: buying is cheaper by <b>" + fmt(-diff, c) + "</b> over " + v.years + " years (" + fmt(cb, c) + " vs " + fmt(cd, c) + ").";
+    }
+    var overlap = end.cdLo <= end.cbHi && end.cbLo <= end.cdHi;
+    var signal = diff < 0 ? "Building would need a strategic reason beyond cost." : "Cost is a real argument for building.";
+    if (u > 0) {
+      verdict += '<span class="verdict-range">Range: build ' + fmt(end.cdLo, c) + "–" + fmt(end.cdHi, c) + ", buy " + fmt(end.cbLo, c) + "–" + fmt(end.cbHi, c) + ". " +
+                 (overlap ? "The ranges overlap, so cost alone doesn't settle it: let the scorecard and risk decide."
+                          : "The ranges don't overlap. " + signal) + "</span>";
+    } else {
+      verdict += '<span class="verdict-range">No uncertainty set, so no range is shown. Real estimates are rarely this precise.</span>';
     }
     $("tco-verdict").innerHTML = verdict;
-    $("tco-chart").innerHTML = tcoChart(rows, v.cur);
+    $("tco-chart").innerHTML = tcoChart(rows, c);
 
     var t = '<table class="tco-table"><thead><tr><th scope="col">Year</th><th scope="col">Buy (year)</th><th scope="col">Build (year)</th><th scope="col">Buy (cumulative)</th><th scope="col">Build (cumulative)</th></tr></thead><tbody>';
     rows.forEach(function (r) {
-      t += '<tr><th scope="row">Y' + r.y + "</th><td>" + fmt(r.buyYear, v.cur) + "</td><td>" + fmt(r.buildYear, v.cur) + "</td><td>" + fmt(r.cb, v.cur) + "</td><td>" + fmt(r.cd, v.cur) + "</td></tr>";
+      t += '<tr><th scope="row">Y' + r.y + "</th><td>" + fmt(r.buyYear, c) + "</td><td>" + fmt(r.buildYear, c) + "</td><td>" + fmt(r.cb, c) + "</td><td>" + fmt(r.cd, c) + "</td></tr>";
     });
     $("tco-table").innerHTML = t + "</tbody></table>";
   }
@@ -349,12 +399,12 @@
   function tcoChart(rows, cur) {
     var W = 640, H = 260, L = 64, Rp = 20, T = 18, B = 34;
     var max = 0;
-    rows.forEach(function (r) { max = Math.max(max, r.cb, r.cd); });
+    rows.forEach(function (r) { max = Math.max(max, r.cbHi, r.cdHi); });
     if (max <= 0) max = 1;
     var n = rows.length;
     function x(i) { return n === 1 ? (L + (W - Rp)) / 2 : L + (i * (W - L - Rp)) / (n - 1); }
     function y(val) { return T + (H - T - B) * (1 - val / max); }
-    var s = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Cumulative cost by year: buy versus build">';
+    var s = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Cumulative cost by year, buy versus build, with best and worst-case bands">';
     for (var k = 0; k <= 4; k++) {
       var val = (max * k) / 4, yy = y(val);
       s += '<line class="grid-line" x1="' + L + '" x2="' + (W - Rp) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) + '"/>';
@@ -363,20 +413,30 @@
     rows.forEach(function (r, i) {
       s += '<text class="axis" x="' + x(i).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle">Y' + r.y + "</text>";
     });
+    function band(lo, hi, cls) {
+      if (n < 2) return "";
+      var top = rows.map(function (r, i) { return x(i).toFixed(1) + "," + y(r[hi]).toFixed(1); });
+      var bottom = rows.slice().reverse().map(function (r, j) { return x(n - 1 - j).toFixed(1) + "," + y(r[lo]).toFixed(1); });
+      return '<polygon class="band ' + cls + '" points="' + top.concat(bottom).join(" ") + '"/>';
+    }
     function line(key, cls) {
       var pts = rows.map(function (r, i) { return x(i).toFixed(1) + "," + y(r[key]).toFixed(1); });
       var out = '<polyline class="series ' + cls + '" points="' + pts.join(" ") + '"/>';
       rows.forEach(function (r, i) { out += '<circle class="dot ' + cls + '" cx="' + x(i).toFixed(1) + '" cy="' + y(r[key]).toFixed(1) + '" r="4"/>'; });
       return out;
     }
+    s += band("cbLo", "cbHi", "b-buy") + band("cdLo", "cdHi", "b-build");
     s += line("cb", "s-buy") + line("cd", "s-build");
     s += "</svg>";
-    s += '<div class="legend"><span class="key k-buy"></span>Buy / subscribe <span class="key k-build"></span>Build with AI <span class="legend-note">cumulative cost</span></div>';
+    s += '<div class="legend"><span class="key k-buy"></span>Buy / subscribe <span class="key k-build"></span>Build with AI <span class="legend-note">cumulative cost · shaded = best to worst case</span></div>';
     return s;
   }
 
   /* ---------- toolkit: scorecard ---------- */
   function computeScore() {
+    var killed = { build: false, buy: false };
+    document.querySelectorAll("[data-knock]").forEach(function (k) { if (k.checked) killed[k.getAttribute("data-kills")] = true; });
+
     var sum = 0, wsum = 0;
     F.scorecard.forEach(function (_, i) {
       var s = parseInt(document.querySelector('[data-score="' + i + '"]').value, 10);
@@ -384,19 +444,34 @@
       sum += s * w; wsum += w;
     });
     var score = wsum ? sum / wsum : 0; // -2 … +2
-    var pct = ((score + 2) / 4) * 100;
-    $("meter-needle").style.left = pct + "%";
+    var meter = document.querySelector(".meter");
     var v;
-    if (!wsum) v = "All criteria are set to Ignore. Give at least one a weight.";
-    else if (score >= 0.6) v = "Leans <b>Build</b> (score " + score.toFixed(2) + " on a −2 to +2 scale). Check the TCO agrees, then take it to Gate G2 with a business case.";
-    else if (score <= -0.6) v = "Leans <b>Buy</b> (score " + score.toFixed(2) + "). Owning this is unlikely to pay back; put the effort into choosing and integrating a product well.";
-    else v = "Leans <b>Blend</b> (score " + score.toFixed(2) + "). Consider buying the commodity core and building the differentiating edge around it.";
+    if (killed.build && killed.buy) {
+      v = "<b>Stop.</b> Knockouts rule out both building and buying. Revisit the requirements, or look at extending a platform you already own.";
+      score = 0;
+    } else if (killed.build) {
+      v = "<b>Buy</b> (knockout). Building is ruled out, so scores don't apply. Choose and integrate a product well, or engineer conventionally with specialists if nothing on the market fits.";
+      score = -2;
+    } else if (killed.buy) {
+      v = "<b>Build or Blend</b> (knockout). No acceptable vendor route exists. Check the TCO and suitability filter, then take it to Gate G2.";
+      score = 2;
+    } else if (!wsum) {
+      v = "All criteria are set to Ignore. Give at least one a weight.";
+    } else if (score >= 0.6) {
+      v = "Leans <b>Build</b> (score " + score.toFixed(2) + " on a −2 to +2 scale). Check the TCO ranges agree, then take it to Gate G2 with a staged business case.";
+    } else if (score <= -0.6) {
+      v = "Leans <b>Buy</b> (score " + score.toFixed(2) + "). Owning this is unlikely to pay back; put the effort into choosing and integrating a product well.";
+    } else {
+      v = "Leans <b>Blend</b> (score " + score.toFixed(2) + "). Buy the commodity core and build the differentiating edge, or replace the vendor gradually.";
+    }
+    meter.classList.toggle("is-knocked", killed.build || killed.buy);
+    $("meter-needle").style.left = ((score + 2) / 4) * 100 + "%";
     $("score-verdict").innerHTML = v;
   }
 
   /* ---------- RACI ---------- */
   function renderRaci() {
-    var html = '<p class="section-intro">Nine roles carry the framework. In a small organisation one person may hold several; the engineer of record and the AI builder should not be the only check on each other in Tier 3.</p>';
+    var html = '<p class="section-intro">' + F.roles.length + ' roles carry the framework. In a small organisation one person may hold several, with one exception: for Tier 3 the engineer of record must be independent of the AI builder.</p>';
     html += '<dl class="roles">';
     F.roles.forEach(function (r) { html += "<div><dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd></div>"; });
     html += "</dl>";
@@ -404,7 +479,7 @@
     html += '<div class="table-wrap"><table class="raci-table"><thead><tr><th scope="col">Phase</th>';
     F.roles.forEach(function (r) { html += '<th scope="col"><span>' + esc(r[0]) + "</span></th>"; });
     html += "</tr></thead><tbody>";
-    F.phases.forEach(function (p) {
+    ALL.forEach(function (p) {
       html += '<tr><th scope="row"><a href="#' + p.id + '">' + p.num + " " + esc(p.name) + "</a></th>";
       F.raci[p.id].forEach(function (letter) {
         html += "<td>" + (letter ? '<span class="raci-pill raci-' + letter + '">' + letter + "</span>" : '<span class="raci-none" aria-label="not involved">·</span>') + "</td>";
@@ -413,6 +488,22 @@
     });
     html += "</tbody></table></div>";
     $("raci-root").innerHTML = html;
+  }
+
+  /* ---------- metrics & standards ---------- */
+  function renderMetrics() {
+    $("metrics-root").innerHTML = F.metrics.map(function (g) {
+      return '<div class="metric-group tone-' + g.tone + '"><p class="metric-name">' + esc(g.name) + '</p><dl>' +
+        g.items.map(function (m) { return "<div><dt>" + esc(m[0]) + "</dt><dd>" + esc(m[1]) + "</dd></div>"; }).join("") + "</dl></div>";
+    }).join("");
+  }
+
+  function renderStandards() {
+    var html = '<div class="table-wrap"><table class="standards"><thead><tr><th scope="col">Standard</th><th scope="col">What it covers</th><th scope="col">Where it shows up in Build Compass</th></tr></thead><tbody>';
+    F.standards.forEach(function (s) {
+      html += '<tr><th scope="row">' + esc(s[0]) + "</th><td>" + esc(s[1]) + "</td><td>" + esc(s[2]) + "</td></tr>";
+    });
+    $("standards-root").innerHTML = html + "</tbody></table></div>";
   }
 
   /* ---------- glossary ---------- */
@@ -434,11 +525,13 @@
   /* ---------- navigation ---------- */
   var NAV = [
     ["map", "Framework map"],
-    ["phases", "Phases", F.phases.map(function (p) { return [p.id, p.num + " " + p.name]; })],
+    ["phases", "Phases", ALL.map(function (p) { return [p.id, p.num + " " + p.name]; })],
     ["method", "Build methodology"],
     ["principles", "Build principles"],
     ["rails", "Always-on rails"],
     ["toolkit", "Decision toolkit"],
+    ["metrics", "Measure the framework"],
+    ["standards", "Standards mapping"],
     ["raci", "Roles & RACI"],
     ["glossary", "Glossary"],
     ["adapt", "Make it your own"]
@@ -578,9 +671,10 @@
     });
     root.addEventListener("change", function (e) {
       if (e.target.hasAttribute("data-tco")) computeTco();
-      if (e.target.hasAttribute("data-weight")) computeScore();
+      if (e.target.hasAttribute("data-weight") || e.target.hasAttribute("data-knock")) computeScore();
     });
     $("score-reset").addEventListener("click", function () {
+      document.querySelectorAll("[data-knock]").forEach(function (k) { k.checked = false; });
       document.querySelectorAll("[data-score]").forEach(function (s) { s.value = 0; });
       document.querySelectorAll("[data-weight]").forEach(function (s) { s.value = 2; });
       computeScore();
@@ -602,6 +696,8 @@
   renderPrinciples();
   renderRails();
   renderToolkit();
+  renderMetrics();
+  renderStandards();
   renderRaci();
   renderGlossary();
   renderAdapt();
