@@ -540,7 +540,7 @@ tbody th { font-weight: 600; }
 /* ---------- footer ---------- */
 .footer { border-top: 1px solid var(--line); background: var(--surface); }
 .footer-inner { max-width: 1280px; margin: 0 auto; padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px)); font-size: 0.9rem; color: var(--ink-soft); }
-.footer-inner p { margin: 0 0 4px; max-width: 80ch; }
+.footer-inner p { margin: 0 0 4px; }
 .to-top {
   position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 40;
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface);
